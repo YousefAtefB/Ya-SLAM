@@ -39,21 +39,11 @@ def bresenham(x1, y1, x2, y2):
 
 	# point (x2,y2) must not be included
 	for i in range(1, delta_x):
-
 		if E < 0:
-
-			if interchange:
-
-				y += s_y
-			
-			else:
-
-				x += s_x
-
+			if interchange: y += s_y
+			else: x += s_x
 			E = E + A
-
 		else:
-
 			y += s_y
 			x += s_x
 			E = E + B
@@ -99,7 +89,6 @@ grid = np.full(shape = (len(x), len(y)), fill_value = log_odds(P_PRIOR))
 pub = rospy.Publisher('/mapping_topic', OccupancyGrid, queue_size=10)
 
 def get_odom_orientation(odom):
-
     q = odom.pose.pose.orientation
     (roll, pitch, yaw) = euler_from_quaternion([q.x, q.y, q.z, q.w])
     if yaw < 0:
@@ -146,14 +135,6 @@ def map_callback(sensors_msg):
     for (d, ang) in zip(distances, angles):
         distances_x.append(x_odom + d * np.cos(ang + theta_odom))
         distances_y.append(y_odom + d * np.sin(ang + theta_odom))
-
-    # # project the laser distances
-    # distances_x, distances_y = [], []
-    # for (d, ang) in zip(distances, angles):
-    #     xi = x_odom + d * np.cos(ang + theta_odom - pi/2)
-    #     yi = y_odom + d * np.sin(ang + theta_odom - pi/2)
-    #     distances_x.append(xi)
-    #     distances_y.append(-yi)
 
     x1, y1 = int((x_odom - WIDTH[0]) / RES), int((y_odom - HEIGHT[0]) / RES)
 
