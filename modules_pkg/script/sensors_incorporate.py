@@ -14,14 +14,14 @@ import sys
 pub = rospy.Publisher('/sensors_topic', LaserAndOdometry, queue_size=10)
 
 def sensors_callback(laser_msg, odom_msg):
-    print(laser_msg.angle_min, laser_msg.angle_max, laser_msg.angle_increment)
-    print(laser_msg.range_min, laser_msg.range_max)
+    # print(laser_msg.angle_min, laser_msg.angle_max, laser_msg.angle_increment)
+    # print(laser_msg.range_min, laser_msg.range_max)
 
     sensors = LaserAndOdometry()
     sensors.laser = laser_msg
     sensors.odom = odom_msg
     
-    print(sensors)
+    # print(sensors)
     pub.publish(sensors)
 
     # print('First topic: {} \n\n Second Topic: {} \n\n\n\n'.format(laser_msg.header,  odom_msg.header))
