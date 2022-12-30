@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   nav_msgs
+  geometry_msgs
   message_filters
   message_generation
   message_runtime
@@ -76,6 +77,7 @@ generate_messages(
   std_msgs
   sensor_msgs
   nav_msgs
+  geometry_msgs
 )
 
 ################################################
