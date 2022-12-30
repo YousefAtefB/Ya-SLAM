@@ -88,7 +88,7 @@ P_OCC = 0.9	    # Probability that cell is occupied with total confidence
 P_FREE = 0.3	# Probability that cell is free with total confidence 
 WIDTH = (-35, 35) # x axis limits
 HEIGHT = (-35, 35) # y axis limits
-RES = 0.3      # Grid resolution in [m]
+RES = 0.5      # Grid resolution in [m]
 
 x = np.arange(start = WIDTH[0], stop = WIDTH[1] + RES, step = RES)
 y = np.arange(start = HEIGHT[0], stop = HEIGHT[1] + RES, step = RES)
@@ -147,11 +147,13 @@ def map_callback(sensors_msg):
         distances_x.append(x_odom + d * np.cos(ang + theta_odom))
         distances_y.append(y_odom + d * np.sin(ang + theta_odom))
 
-    # project the laser distances
-    distances_x, distances_y = [], []
-    for (d, ang) in zip(distances, angles):
-        distances_x.append(x_odom + d * np.cos(ang + theta_odom))
-        distances_y.append(y_odom + d * np.sin(ang + theta_odom))
+    # # project the laser distances
+    # distances_x, distances_y = [], []
+    # for (d, ang) in zip(distances, angles):
+    #     xi = x_odom + d * np.cos(ang + theta_odom - pi/2)
+    #     yi = y_odom + d * np.sin(ang + theta_odom - pi/2)
+    #     distances_x.append(xi)
+    #     distances_y.append(-yi)
 
     x1, y1 = int((x_odom - WIDTH[0]) / RES), int((y_odom - HEIGHT[0]) / RES)
 
@@ -177,8 +179,9 @@ def map_callback(sensors_msg):
     occ_grid.info.origin.position.x = WIDTH[0]
     occ_grid.info.origin.position.y = HEIGHT[0]
     # occ_grid.info.origin.orientation.w = 0.0 
-    occ_grid.info.origin.orientation.x, occ_grid.info.origin.orientation.y, occ_grid.info.origin.orientation.z, occ_grid.info.origin.orientation.w = 0, 0, 0, 0
+    # occ_grid.info.origin.orientation.x, occ_grid.info.origin.orientation.y, occ_grid.info.origin.orientation.z, occ_grid.info.origin.orientation.w = 0, 0, 0, 0
     # occ_grid.info.origin.orientation.z = quaternion_from_euler()
+    occ_grid.info.origin.orientation.x, occ_grid.info.origin.orientation.y, occ_grid.info.origin.orientation.z, occ_grid.info.origin.orientation.w = quaternion_from_euler(pi, 0, +pi/2)
     # print(occ_grid)
     print(max(occ_grid.data))
     pub.publish(occ_grid)
