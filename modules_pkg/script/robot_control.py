@@ -6,6 +6,8 @@ from rospy.rostime import Time
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
 
+# Getting key input from terminal
+# No Blocking
 def getKey(key_timeout):
     tty.setraw(sys.stdin.fileno())
     rlist, _, _ = select.select([sys.stdin], [], [], key_timeout)
@@ -37,29 +39,31 @@ def main():
     lst_ang = Time.now().to_sec()
 
     # main loop
+    # simulation is so slow anyway hh
+    rate = rospy.Rate(15)
     while not rospy.is_shutdown():
-
+        # get key input
         key = getKey(0)
- 
+
         # forward
-        if key == 'w':
+        if key == 'w' or key == 'W':
             lst_speed = Time.now().to_sec()
             speed += acc
             speed = min(speed, max_speed)
         
         # backward
-        if key == 's':
+        if key == 's' or key == 'S':
             lst_speed = Time.now().to_sec()
             speed -= acc
             speed = max(speed, -max_speed)
         
         # right 
-        if key == 'd':
+        if key == 'd' or key == 'D':
             lst_ang = Time.now().to_sec()
             ang = -max_ang
         
         # left
-        if key == 'a':
+        if key == 'a' or key == 'A':
             lst_ang = Time.now().to_sec()
             ang = max_ang
         
@@ -91,6 +95,8 @@ def main():
         twist.angular.z = ang
         pub.publish(twist)
 
+        # rate.sleep()
+
     # stop the robot from moving before ending
     twist.linear.x = 0
     twist.linear.y = 0
@@ -102,7 +108,10 @@ def main():
         
 if __name__ == '__main__':
     try:
+        print('robot goz vrooooooooom')
+        print('wasd -> /robot/robotnik_base_control/cmd_vel')
         settings = termios.tcgetattr(sys.stdin)
         main()
     except rospy.ROSInterruptException:
+        print('u brok jostik')
         pass

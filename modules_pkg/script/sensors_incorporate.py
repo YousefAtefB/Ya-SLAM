@@ -11,27 +11,20 @@ from modules_pkg.msg import LaserAndOdometry
 import sys
 
 # Assign node as a publisher to this topic
-pub = rospy.Publisher('/sensors_topic', LaserAndOdometry, queue_size=10)
+pub = rospy.Publisher('/sensors_gamda', LaserAndOdometry, queue_size=10)
 
 def sensors_callback(laser_msg, odom_msg):
-    # print(laser_msg.angle_min, laser_msg.angle_max, laser_msg.angle_increment)
-    # print(laser_msg.range_min, laser_msg.range_max)
-
     sensors = LaserAndOdometry()
     sensors.laser = laser_msg
     sensors.odom = odom_msg
     
-    # print(sensors)
     pub.publish(sensors)
-
-    # print('First topic: {} \n\n Second Topic: {} \n\n\n\n'.format(laser_msg.header,  odom_msg.header))
-    # print(len(front_msg.ranges), len(rear_msg.ranges))    
 
 def main():
     # Initialize Node with node name
     rospy.init_node('sensors_incorporate')
 
-    # Make the node as a subscriber of multiple topics
+    # Listen to Laser and Odometry
     laser_sub = message_filters.Subscriber('/scan_multi', LaserScan)
     odom_sub = message_filters.Subscriber('/robot/robotnik_base_control/odom', Odometry)
 
@@ -43,13 +36,15 @@ def main():
     )
     
     ts.registerCallback(sensors_callback)
-
     # Wait for messages
     rospy.spin()
 
 
 if __name__ == '__main__':
     try:
+        print('lazer goz weeeeeeeeee')
+        print('/scan_multi + /robot/robotnik_base_control/odom --> /sensors_gamda')
         main()
     except rospy.ROSInterruptException:
+        print('lazer iz ded')
         pass
