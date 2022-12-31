@@ -1,0 +1,6 @@
+<launch>
+<include file="$(find ira_laser_tools)/launch/laserscan_multi_merger.launch"/>
+<node pkg="modules_pkg" type="sensors_incorporate.py" name="sensors_incorporate" output="screen"></node>
+<node pkg="modules_pkg" type="slam.py" name="slam" output="screen"></node>
+<node pkg="modules_pkg" type="robot_control.py" name="robot_control" output="screen"></node>
+</launch>
