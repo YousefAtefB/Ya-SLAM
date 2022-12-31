@@ -83,7 +83,7 @@ P_OCC   = 0.9       # Probability that cell is occupied with total confidence
 P_FREE  = 0.3       # Probability that cell is free with total confidence
 WIDTH   = (-35, 35) # x axis limits
 HEIGHT  = (-35, 35) # y axis limits
-RES     = 0.5       # Grid resolution in [m]
+RES     = 0.3       # Grid resolution in [m]
 
 # rasterize
 def rasterize(x, y):
@@ -95,26 +95,27 @@ y = np.arange(start = HEIGHT[0], stop = HEIGHT[1] + RES, step = RES)
 # probability matrix in log-odds scale:
 grid = np.full(shape = (len(x), len(y)), fill_value = log_odds(P_PRIOR))
 
-# linear motion models
-def g_linear(state, action, delta):
+# linear motion model
+def g_linear(state, action):
     # state: [x, y, theta]
     # action: [v, w]
     x, y, theta = state
     v, w = action
     #
-    return np.array([x + v *delta *np.cos(theta), y + v *delta * np.sin(theta), theta + w])
+    return np.array([x + v * np.cos(theta), y + v * np.sin(theta), theta + w])
 
-def g(state, action, delta):
+# motion model
+def g(state, action):
     # state: [x, y, theta]
     # action: [v, w]
     x, y, theta = state
     v, w = action
     if w == 0:
-        return g_linear(state, action, delta)
+        return g_linear(state, action)
     #
-    xn = x + (-v/w * np.sin(theta) + v/w * np.sin(theta + w *delta))
-    yn = y + (v/w * np.cos(theta) - v/w * np.cos(theta + w *delta))
-    thetan = theta + w *delta
+    xn = x + (-v/w * np.sin(theta) + v/w * np.sin(theta + w))
+    yn = y + (v/w * np.cos(theta) - v/w * np.cos(theta + w))
+    thetan = theta + w
     #
     while thetan < 0:
         thetan += 2 * np.pi
@@ -164,17 +165,22 @@ def slam_callback(sensors_msg):
     global state_cov
     global tim
     global delta
-    # read sensors
+
     laser = sensors_msg.laser
     odom = sensors_msg.odom
-    # time difference
+
     ntim = laser.header.stamp.secs + laser.header.stamp.nsecs * 1e-9
     delta = ntim - tim
     tim = ntim
-    #
+    # delta = 1
+    # print(delta)
+
     action = [odom.twist.twist.linear.x, odom.twist.twist.angular.z]
-    #
-    state = g(state, action, delta)
+
+    action[0] *= delta
+    action[1] *= delta
+
+    state = g_linear(state, action)
     #
     # publish state
     pose = PoseStamped()
@@ -189,6 +195,9 @@ def slam_callback(sensors_msg):
     pose.pose.orientation.w = q[3]
     #
     pub_loc.publish(pose)
+    #
+    #
+    # MAPPING
     # get position and orientation from odometry
     x, y, th = state
     # Get distances and angles of laser scan
