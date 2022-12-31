@@ -84,7 +84,6 @@ RES     = 0.5       # Grid resolution in [m]
 # rasterize
 def rasterize(x, y):
     return int((x-WIDTH[0])/RES), int((y-HEIGHT[0])/RES)
-    # return np.round((x - WIDTH[0]) / RES).astype(int), np.round((y - HEIGHT[0]) / RES).astype(int)
 
 # Grid
 x = np.arange(start = WIDTH[0], stop = WIDTH[1] + RES, step = RES)
